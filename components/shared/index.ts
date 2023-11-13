@@ -1,6 +1,7 @@
-export { default as Alert } from './alert';
-export { default as LetterAvatar } from './letter-avatar';
-export { default as EmptyState } from './empty-state';
-export { default as InputWithLabel } from './input-with-label';
-export { default as Loading } from './loading';
-export { default as Error } from './error';
+export { default as Alert } from './Alert';
+export { default as LetterAvatar } from './LetterAvatar';
+export { default as EmptyState } from './EmptyState';
+export { default as InputWithLabel } from './InputWithLabel';
+export { default as Loading } from './Loading';
+export { default as Error } from './Error';
+export { default as Card } from './Card';

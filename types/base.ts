@@ -16,7 +16,6 @@ export type ApiResponse<T = unknown> =
 
 export type Role = 'admin' | 'user';
 
-
 export type AppEvent =
     | 'user.password.updated'
     | 'user.password.request'

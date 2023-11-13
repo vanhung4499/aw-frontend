@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 
-import Alert from './alert';
+import Alert from './Alert';
 
 interface ErrorProps {
     message?: string;

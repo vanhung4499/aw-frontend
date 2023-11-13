@@ -5,7 +5,7 @@ const nextConfig = {
     experimental: { esmExternals: false, webpackBuildWorker: true },
     reactStrictMode: true,
     images: {
-        domains: ['aw.com'],
+        domains: ['boxyhq.com'],
     },
     i18n,
 }

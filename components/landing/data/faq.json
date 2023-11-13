@@ -1,0 +1,10 @@
+[
+  {
+    "question": "What is AW?",
+    "answer": "Fullstack app with NestJS and NextJS, build for learning purposes."
+  },
+  {
+    "question": "What tech stack?",
+    "answer": "NextJS, React, NestJS, Postgres, Docker, AWS EC2, AWS S3, Cloudinary, Mailgun, Github Actions, JWT"
+  }
+]
