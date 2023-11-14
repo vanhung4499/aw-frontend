@@ -10,8 +10,7 @@ import toast from 'react-hot-toast';
 import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import React, { type ReactElement, useEffect, useState, useRef } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import env from '@/lib/env';
@@ -24,6 +23,8 @@ import Head from 'next/head';
 import TogglePasswordVisibility from '@/components/shared/TogglePasswordVisibility';
 import AgreeMessage from '@/components/auth/AgreeMessage';
 import { ComponentStatus } from 'react-daisyui/dist/types';
+import {login} from "@/services/auth";
+import {useAuthStore} from "@/store/useAuthStore";
 
 interface Message {
     text: string | null;
@@ -34,15 +35,19 @@ const Login: NextPageWithLayout<
     InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ authProviders }) => {
     const router = useRouter();
-    const { status } = useSession();
     const { t } = useTranslation('common');
     const [message, setMessage] = useState<Message>({ text: null, status: null });
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
-    const { error, success, token } = router.query as {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated);
+    const setUser = useAuthStore((state) => state.setUser);
+    const setToken = useAuthStore((state) => state.setToken);
+    const setRefreshToken = useAuthStore((state) => state.setRefreshToken);
+
+    const { error, success } = router.query as {
         error: string;
         success: string;
-        token: string;
     };
 
     const handlePasswordVisibility = () => {
@@ -59,9 +64,7 @@ const Login: NextPageWithLayout<
         }
     }, [error, success]);
 
-    const redirectUrl = token
-        ? `/invitations/${token}`
-        : env.redirectIfAuthenticated;
+    const redirectUrl = env.redirectIfAuthenticated;
 
     const formik = useFormik({
         initialValues: {
@@ -75,31 +78,31 @@ const Login: NextPageWithLayout<
         onSubmit: async (values) => {
             const { email, password } = values;
 
-            const response = await signIn('credentials', {
-                email,
-                password,
-                redirect: false,
-                callbackUrl: redirectUrl,
-            });
+            const response = await login({email, password});
+
+            if (response.data.error) {
+                toast.error(t(response.data.error));
+                return;
+            }
+
+            setIsAuthenticated(true);
+            setUser(response.data.user);
+            setToken(response.data.token);
+            setRefreshToken(response.data.refreshToken);
 
             formik.resetForm();
 
-            if (!response?.ok) {
-                toast.error(t(response?.error as string));
-                return;
-            }
+
         },
     });
 
-    if (status === 'loading') {
-        return <Loading />;
-    }
+    // if (isAuthenticated) {
+    //     return <Loading />;
+    // }
 
-    if (status === 'authenticated') {
+    if (isAuthenticated) {
         router.push(redirectUrl);
     }
-
-    const params = token ? `?token=${token}` : '';
 
     return (
         <>
@@ -139,13 +142,13 @@ const Login: NextPageWithLayout<
                                         <label className="label">
                                             <span className="label-text">Password</span>
                                             <span className="label-text-alt">
-                        <Link
-                            href="/auth/forgot-password"
-                            className="text-sm text-primary hover:text-primary-focus"
-                        >
-                          {t('forgot-password')}
-                        </Link>
-                      </span>
+                                            <Link
+                                                href="/auth/forgot-password"
+                                                className="text-sm text-primary hover:text-primary-focus"
+                                            >
+                                              {t('forgot-password')}
+                                            </Link>
+                                          </span>
                                         </label>
                                     }
                                     error={
@@ -159,7 +162,7 @@ const Login: NextPageWithLayout<
                                 />
                             </div>
                         </div>
-                        <div className="mt-3 space-y-3">
+                        <div className="mt-5 space-y-3">
                             <Button
                                 type="submit"
                                 color="primary"
@@ -178,25 +181,14 @@ const Login: NextPageWithLayout<
                 {(authProviders.email) && (
                     <div className="divider"></div>
                 )}
-
-                <div className="space-y-3">
-                    {authProviders.email && (
-                        <Link
-                            href={`/auth/magic-link${params}`}
-                            className="btn-outline btn w-full"
-                        >
-                            &nbsp;{t('sign-in-with-email')}
-                        </Link>
-                    )}
-                </div>
             </div>
             <p className="text-center text-sm text-gray-600 mt-3">
                 {t('dont-have-an-account')}
                 <Link
-                    href={`/auth/singup${params}`}
+                    href="/auth/signup"
                     className="font-medium text-primary hover:text-primary-focus"
                 >
-                    &nbsp;{t('create-a-free-account')}
+                    &nbsp;{t('create-a-account')}
                 </Link>
             </p>
         </>

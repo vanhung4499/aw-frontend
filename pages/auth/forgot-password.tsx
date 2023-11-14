@@ -15,7 +15,6 @@ import { Button } from 'react-daisyui';
 import toast from 'react-hot-toast';
 import type { ApiResponse, NextPageWithLayout } from '@/types';
 import * as Yup from 'yup';
-import GoogleReCAPTCHA from '@/components/shared/GoogleReCAPTCHA';
 import ReCAPTCHA from 'react-google-recaptcha';
 import env from '@/lib/env';
 
@@ -23,8 +22,6 @@ const ForgotPassword: NextPageWithLayout<
     InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ recaptchaSiteKey }) => {
     const { t } = useTranslation('common');
-    const recaptchaRef = useRef<ReCAPTCHA>(null);
-    const [recaptchaToken, setRecaptchaToken] = useState<string>('');
 
     const formik = useFormik({
         initialValues: {
@@ -39,14 +36,12 @@ const ForgotPassword: NextPageWithLayout<
                 headers: defaultHeaders,
                 body: JSON.stringify({
                     ...values,
-                    recaptchaToken,
                 }),
             });
 
             const json = (await response.json()) as ApiResponse;
 
             formik.resetForm();
-            recaptchaRef.current?.reset();
 
             if (!response.ok) {
                 toast.error(json.error.message);
@@ -73,11 +68,6 @@ const ForgotPassword: NextPageWithLayout<
                             value={formik.values.email}
                             error={formik.touched.email ? formik.errors.email : undefined}
                             onChange={formik.handleChange}
-                        />
-                        <GoogleReCAPTCHA
-                            recaptchaRef={recaptchaRef}
-                            onChange={setRecaptchaToken}
-                            siteKey={recaptchaSiteKey}
                         />
                     </div>
                     <div className="mt-4">

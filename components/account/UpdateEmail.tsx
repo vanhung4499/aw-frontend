@@ -8,22 +8,23 @@ import type { ApiResponse } from '@/types';
 import { Card } from '@/components/shared';
 import { defaultHeaders } from '@/lib/common';
 import type { IUser } from '@/models';
+import {useAuthStore} from "@/store/useAuthStore";
 
 const schema = Yup.object().shape({
     email: Yup.string().required(),
 });
 
 interface UpdateEmailProps {
-    user: Partial<IUser>;
     allowEmailChange: boolean;
 }
 
-const UpdateEmail = ({ user, allowEmailChange }: UpdateEmailProps) => {
+const UpdateEmail = ({ allowEmailChange }: UpdateEmailProps) => {
     const { t } = useTranslation('common');
+    const user = useAuthStore((state) => state.user);
 
     const formik = useFormik({
         initialValues: {
-            email: user.email,
+            email: user!.email,
         },
         validationSchema: schema,
         onSubmit: async (values) => {

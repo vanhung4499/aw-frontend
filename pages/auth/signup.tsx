@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { type ReactElement, useEffect } from 'react';
@@ -18,14 +17,12 @@ import env from '@/lib/env';
 
 const Signup: NextPageWithLayout<
     InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ authProviders, recaptchaSiteKey }) => {
+> = ({ authProviders }) => {
     const router = useRouter();
-    const { status } = useSession();
     const { t } = useTranslation('common');
 
-    const { error, token } = router.query as {
+    const { error } = router.query as {
         error: string;
-        token: string;
     };
 
     useEffect(() => {
@@ -34,15 +31,13 @@ const Signup: NextPageWithLayout<
         }
     }, [error]);
 
-    if (status === 'loading') {
-        return <Loading />;
-    }
-
-    if (status === 'authenticated') {
-        router.push(env.redirectIfAuthenticated);
-    }
-
-    const params = token ? `?token=${token}` : '';
+    // if (status === 'loading') {
+    //     return <Loading />;
+    // }
+    //
+    // if (status === 'authenticated') {
+    //     router.push(env.redirectIfAuthenticated);
+    // }
 
     return (
         <>
@@ -59,14 +54,14 @@ const Signup: NextPageWithLayout<
 
                 {authProviders.credentials && (
                     <>
-                        <Register recaptchaSiteKey={recaptchaSiteKey} />
+                        <Register />
                     </>
                 )}
             </div>
             <p className="text-center text-sm text-gray-600 mt-3">
                 {t('already-have-an-account')}
                 <Link
-                    href={`/auth/login/${params}`}
+                    href="/auth/login"
                     className="font-medium text-primary hover:text-primary-focus"
                 >
                     &nbsp;{t('sign-in')}
@@ -93,7 +88,6 @@ export const getServerSideProps = async (
         props: {
             ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
             authProviders: authProviderEnabled(),
-            recaptchaSiteKey: env.recaptcha.siteKey,
         },
     };
 };

@@ -1,19 +1,15 @@
 import { useState } from 'react';
 import { Loading } from '@/components/shared';
-import { useSession } from 'next-auth/react';
 import React from 'react';
 import Header from './Header';
 import Drawer from './Drawer';
+import {useAuthStore} from "@/store/useAuthStore";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-    const { status } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-    if (status === 'loading') {
-        return <Loading />;
-    }
-
-    if (status === 'unauthenticated') {
+    if (!isAuthenticated) {
         return <p>Access Denied</p>;
     }
 

@@ -12,23 +12,18 @@ import * as Yup from 'yup';
 import TogglePasswordVisibility from '../shared/TogglePasswordVisibility';
 import AgreeMessage from './AgreeMessage';
 
-interface RegisterProps {
-    recaptchaSiteKey: string | null;
-}
-
-const Register = ({ recaptchaSiteKey }: RegisterProps) => {
+const Register = () => {
     const router = useRouter();
     const { t } = useTranslation('common');
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState<boolean>(false);
-    const [recaptchaToken, setRecaptchaToken] = useState<string>('');
 
     const handlePasswordVisibility = () => {
         setIsPasswordVisible((prev) => !prev);
     };
 
     const handleConfirmPasswordVisibility = () => {
-        setIsPasswordVisible((prev) => !prev);
+        setIsConfirmPasswordVisible((prev) => !prev);
     };
 
     const formik = useFormik({
@@ -50,7 +45,6 @@ const Register = ({ recaptchaSiteKey }: RegisterProps) => {
                 headers: defaultHeaders,
                 body: JSON.stringify({
                     ...values,
-                    recaptchaToken,
                 }),
             });
 
@@ -126,7 +120,7 @@ const Register = ({ recaptchaSiteKey }: RegisterProps) => {
                     />
                 </div>
             </div>
-            <div className="mt-3 space-y-3">
+            <div className="mt-5 space-y-3">
                 <Button
                     type="submit"
                     color="primary"

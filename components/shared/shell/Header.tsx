@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import React from "react";
 import useTheme from "@/hooks/useTheme";
-import {useSession} from "next-auth/react";
 import {
     ArrowRightOnRectangleIcon,
     Bars3Icon,
@@ -10,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import env from '@/lib/env';
-import { signOut } from 'next-auth/react';
+import {useAuthStore} from "@/store/useAuthStore";
 
 
 interface HeaderProps {
@@ -19,13 +18,12 @@ interface HeaderProps {
 
 const Header = ({ setSidebarOpen }: HeaderProps) => {
     const { toggleTheme } = useTheme();
-    const { status, data } = useSession();
 
-    if (status === 'loading' || !data) {
+    if (status === 'loading') {
         return null;
     }
 
-    const user = data.user;
+    const user = useAuthStore(state => state.user)
 
     return (
         <div className="sticky top-0 z-40 flex h-14 shrink-0 items-center border-b px-4 sm:gap-x-6 sm:px-6 lg:px-8 bg-white">
@@ -94,7 +92,8 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                                 <button
                                     className="block px-2 py-1 text-sm leading-6 text-gray-900 cursor-pointer"
                                     type="button"
-                                    onClick={() => signOut()}
+                                    // TODO: Add signOut function
+                                    // onClick={() => signOut()}
                                 >
                                     <div className="flex items-center">
                                         <ArrowRightOnRectangleIcon className="w-5 h-5 mr-1" />{' '}

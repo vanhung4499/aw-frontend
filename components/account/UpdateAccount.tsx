@@ -6,16 +6,15 @@ import UpdateTheme from './UpdateTheme';
 import env from '@/lib/env';
 
 interface UpdateAccountProps {
-    user: Partial<IUser>;
     allowEmailChange: boolean;
 }
 
-const UpdateAccount = ({ user, allowEmailChange }: UpdateAccountProps) => {
+const UpdateAccount = ({ allowEmailChange }: UpdateAccountProps) => {
     return (
         <div className="flex gap-6 flex-col">
-            <UpdateName user={user} />
-            <UpdateEmail user={user} allowEmailChange={allowEmailChange} />
-            <UploadAvatar user={user} />
+            <UpdateName />
+            <UpdateEmail allowEmailChange={allowEmailChange} />
+            <UploadAvatar />
             {env.darkModeEnabled && <UpdateTheme />}
         </div>
     );

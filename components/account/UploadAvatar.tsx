@@ -8,12 +8,14 @@ import type { ApiResponse } from '@/types';
 import { IUser } from '@/models';
 import { Card } from '@/components/shared';
 import { defaultHeaders } from '@/lib/common';
+import {useAuthStore} from "@/store/useAuthStore";
 
-const UploadAvatar = ({ user }: { user: Partial<IUser> }) => {
+const UploadAvatar = () => {
     const { t } = useTranslation('common');
     const [dragActive, setDragActive] = useState(false);
     const [image, setImage] = useState<string | null>();
     const [loading, setLoading] = useState(false);
+    const user = useAuthStore((state) => state.user);
 
     useEffect(() => {
         setImage(

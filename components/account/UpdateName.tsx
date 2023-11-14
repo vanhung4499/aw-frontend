@@ -8,21 +8,21 @@ import type { ApiResponse } from '@/types';
 import { Card } from '@/components/shared';
 import { defaultHeaders } from '@/lib/common';
 import { IUser } from '@/models';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import {useAuthStore} from "@/store/useAuthStore";
 
 const schema = Yup.object().shape({
     name: Yup.string().required(),
 });
 
-const UpdateName = ({ user }: { user: Partial<IUser> }) => {
+const UpdateName = () => {
     const { t } = useTranslation('common');
-    const { update } = useSession();
     const router = useRouter();
+    const user = useAuthStore((state) => state.user);
 
     const formik = useFormik({
         initialValues: {
-            name: user.name,
+            name: user!.name,
         },
         enableReinitialize: true,
         validationSchema: schema,
@@ -40,9 +40,10 @@ const UpdateName = ({ user }: { user: Partial<IUser> }) => {
                 return;
             }
 
-            await update({
-                name: json.data.name,
-            });
+            // TODO: Call update user api
+            // await update({
+            //     name: json.data.name,
+            // });
 
             router.replace('/settings/account');
             toast.success(t('successfully-updated'));
