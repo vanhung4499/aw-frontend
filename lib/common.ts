@@ -74,5 +74,5 @@ export const defaultHeaders = {
 };
 
 export const passwordPolicies = {
-    minLength: 8,
+    minLength: 6,
 };

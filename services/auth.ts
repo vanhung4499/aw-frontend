@@ -7,7 +7,7 @@ export const login = async (body: IUserLoginInput) => {
 }
 
 export const logout = async () => {
-
+    // TODO: Implement logout
 }
 
 export const register = async (body: IUserRegistrationInput) => {

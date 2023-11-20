@@ -11,7 +11,6 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import env from '@/lib/env';
 import {useAuthStore} from "@/store/useAuthStore";
 
-
 interface HeaderProps {
     setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -19,11 +18,25 @@ interface HeaderProps {
 const Header = ({ setSidebarOpen }: HeaderProps) => {
     const { toggleTheme } = useTheme();
 
+    const redirectUrl = env.appUrl;
+
     if (status === 'loading') {
         return null;
     }
 
-    const user = useAuthStore(state => state.user)
+    const user = useAuthStore(state => state.user);
+    const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
+    const removeUser = useAuthStore(state => state.removeUser);
+    const removeToken = useAuthStore(state => state.removeToken)
+    const removeRefreshToken = useAuthStore(state => state.removeRefreshToken)
+
+    function signOut() {
+        setIsAuthenticated(false)
+        removeUser();
+        removeToken();
+        removeRefreshToken();
+        window.location.href = '/auth/login';
+    }
 
     return (
         <div className="sticky top-0 z-40 flex h-14 shrink-0 items-center border-b px-4 sm:gap-x-6 sm:px-6 lg:px-8 bg-white">
@@ -45,7 +58,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                     className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                     aria-hidden="true"
                 >
-                  {user!.name}
+                  {user?.username}
                 </button>
                 <ChevronDownIcon
                     className="ml-2 h-5 w-5 text-gray-400"
@@ -93,7 +106,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                                     className="block px-2 py-1 text-sm leading-6 text-gray-900 cursor-pointer"
                                     type="button"
                                     // TODO: Add signOut function
-                                    // onClick={() => signOut()}
+                                    onClick={() => signOut()}
                                 >
                                     <div className="flex items-center">
                                         <ArrowRightOnRectangleIcon className="w-5 h-5 mr-1" />{' '}

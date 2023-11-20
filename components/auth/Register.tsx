@@ -11,6 +11,7 @@ import type { ApiResponse } from '@/types';
 import * as Yup from 'yup';
 import TogglePasswordVisibility from '../shared/TogglePasswordVisibility';
 import AgreeMessage from './AgreeMessage';
+import {register} from "@/services/auth";
 
 const Register = () => {
     const router = useRouter();
@@ -28,38 +29,36 @@ const Register = () => {
 
     const formik = useFormik({
         initialValues: {
-            name: '',
+            username: '',
             email: '',
             password: '',
             confirmPassword: '',
         },
         validationSchema: Yup.object().shape({
-            name: Yup.string().required(),
+            username: Yup.string().required(),
             email: Yup.string().required().email(),
             password: Yup.string().required().min(passwordPolicies.minLength),
             confirmPassword: Yup.string().required().min(passwordPolicies.minLength),
         }),
         onSubmit: async (values) => {
-            const response = await fetch('/auth/register', {
-                method: 'POST',
-                headers: defaultHeaders,
-                body: JSON.stringify({
-                    ...values,
-                }),
-            });
+            const body = {
+                password: values.password,
+                confirmPassword: values.confirmPassword,
+                user: {
+                    username: values.username,
+                    email: values.email,
+                }
+            }
+            const response = await register(body);
 
-            const json = (await response.json()) as ApiResponse<
-                IUser & { confirmEmail: boolean }
-            >;
-
-            if (!response.ok) {
-                toast.error(json.error.message);
+            if (response.data.error) {
+                toast.error(response.data.error);
                 return;
             }
 
             formik.resetForm();
 
-            if (json.data.confirmEmail) {
+            if (response.data.confirmEmail) {
                 router.push('/auth/verify-email');
             } else {
                 toast.success(t('successfully-joined'));
@@ -73,11 +72,11 @@ const Register = () => {
             <div className="space-y-1">
                 <InputWithLabel
                     type="text"
-                    label={t('name')}
-                    name="name"
-                    placeholder={t('your-name')}
-                    value={formik.values.name}
-                    error={formik.touched.name ? formik.errors.name : undefined}
+                    label={t('username')}
+                    name="username"
+                    placeholder={t('username')}
+                    value={formik.values.username}
+                    error={formik.touched.username ? formik.errors.username : undefined}
                     onChange={formik.handleChange}
                 />
                 <InputWithLabel
@@ -108,7 +107,7 @@ const Register = () => {
                     <InputWithLabel
                         type={isConfirmPasswordVisible ? 'text' : 'password'}
                         label={t('confirm-password')}
-                        name="confirm-password"
+                        name="confirmPassword"
                         placeholder={t('confirm-password')}
                         value={formik.values.confirmPassword}
                         error={formik.touched.confirmPassword ? formik.errors.confirmPassword : undefined}

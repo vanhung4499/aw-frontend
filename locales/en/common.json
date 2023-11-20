@@ -20,6 +20,7 @@
   "continue-with-saml-sso": "Continue with SAML SSO",
   "send-magic-link": "Send Magic Link",
   "your-name": "Your name",
+  "username": "Username",
   "your-email": "Your email",
   "save-changes": "Save Changes",
   "successfully-updated": "Changes saved successfully.",

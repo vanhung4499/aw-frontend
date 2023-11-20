@@ -91,8 +91,6 @@ const Login: NextPageWithLayout<
             setRefreshToken(response.data.refreshToken);
 
             formik.resetForm();
-
-
         },
     });
 
